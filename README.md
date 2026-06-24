@@ -134,7 +134,7 @@ Tạo và sao chép các file hook script vào thư mục cấu hình cá nhân 
 mkdir -p ~/.claude/hooks/gitnexus/
 
 # Sao chép hook script từ repo dự án vào thư mục cấu hình global của Claude
-cp -r .claude/hooks/gitnexus/ ~/.claude/hooks/gitnexus/
+cp -r hooks/gitnexus/ ~/.claude/hooks/gitnexus/
 ```
 
 ### Bước 3: Cấu hình File settings.json cho Claude CLI
