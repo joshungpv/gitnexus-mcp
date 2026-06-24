@@ -111,7 +111,7 @@ Lợi ích của sự nhất quán này bao gồm:
 
 ---
 
-## 5. Hướng dẫn Cấu hình Chi tiết
+## 5. Hướng dẫn Cấu hình Chi tiết (MacOS)
 
 ### Bước 1: Cài đặt GitNexus Global
 Đảm bảo GitNexus đã được cài đặt trên máy của bạn (sử dụng Homebrew hoặc npm global) để tăng tốc độ chạy thay vì sử dụng `npx` tải lại mỗi lần:
