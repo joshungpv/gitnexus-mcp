@@ -30,13 +30,13 @@ flowchart LR
 
 ## 2. Phân bổ các Cấp độ Cấu hình MCP (Gemini/Antigravity)
 
-Hệ sinh thái Gemini và Antigravity IDE hỗ trợ tải cấu hình MCP từ 3 cấp độ khác nhau. Việc phân bổ đúng chỗ giúp hệ thống mượt mà và tránh xung đột dữ liệu:
+Dưới đây là bảng đã được hiệu chỉnh lại các tham số kỹ thuật chính xác theo Tài liệu Plugins & Skills của Google Antigravity để bạn áp dụng trực tiếp:
 
-| Cấp độ cấu hình | Đường dẫn lưu trữ | Phạm vi tác động | Độ ưu tiên | Khuyên dùng cho |
+| Cấp độ cấu hình | Đường dẫn lưu trữ chính xác | Phạm vi tác động | Độ ưu tiên | Khuyên dùng cho |
 | :--- | :--- | :--- | :--- | :--- |
-| **Cấp Dự án (Project)** | `<project-root>/.mcp.json` | Chỉ áp dụng khi mở dự án hiện tại. | **1 (Cao nhất)** | Các công cụ gắn liền với codebase của dự án (ví dụ: [Graphify](file:///Users/vanhungphan/Developement/ai/agentproject-workspaces/.mcp.json#L3-L10), DB Reader nội bộ). |
-| **Cấp IDE Client** | `~/.gemini/antigravity-ide/mcp_config.json` | Chỉ áp dụng trong giao diện Antigravity IDE. | **2 (Trung bình)** | Các công cụ đặc thù UI/UX, hỗ trợ debug đồ họa trên IDE (Chrome DevTools, Screen Capturer). |
-| **Cấp Hệ thống / Lõi** | `~/.gemini/config/mcp_config.json` | Toàn bộ các công cụ Gemini trên máy (IDE + Terminal CLI). | **3 (Thấp nhất)** | Tri thức cá nhân toàn cục, công cụ hệ thống bảo mật có chứa API key cá nhân (như Obsidian MCP, Google Search API). |
+| **Cấp Dự án (Project)** | `<project-root>/.mcp.json` | Chỉ áp dụng khi mở dự án hiện tại. | 1 (Cao nhất) | Các công cụ gắn liền với codebase của dự án (ví dụ: DB Reader nội bộ, script tự động hóa). |
+| **Cấp Hệ thống hợp nhất** | `~/.gemini/config/mcp_config.json` | Toàn bộ các công cụ thuộc hệ sinh thái Gemini/Antigravity trên máy (IDE + CLI). | 2 (Trung bình) | Tri thức cá nhân toàn cục, công cụ hệ thống bảo mật có chứa API key cá nhân (như Obsidian MCP, Google Search API). |
+| **Cấp CLI Độc lập** | `~/.gemini/antigravity-cli/mcp_config.json` | Chỉ áp dụng riêng khi gọi các tiến trình chạy từ Terminal qua Antigravity CLI. | 3 (Thấp nhất) | Các plugin tự động hóa terminal, quản lý container, sandbox phục vụ riêng cho môi trường dòng lệnh. |
 
 > [!IMPORTANT]
 > **Quy tắc phân bổ:** Tuyệt đối không khai báo cấu hình MCP của một dự án cụ thể ở cấp độ Hệ thống (Global) để tránh việc Agent bị lẫn lộn ngữ cảnh/dữ liệu khi bạn chuyển đổi giữa các dự án khác nhau.
@@ -98,7 +98,7 @@ flowchart LR
 ### Tại sao đây là giải pháp tối ưu?
 1.  **Tránh xung đột:** IDE bỏ qua phần `hooks` không được hỗ trợ và chỉ load `mcpServers` bình thường.
 2.  **Tự động hóa tối đa trên CLI:** Khi làm việc với Terminal CLI, bạn không cần nhớ chạy các lệnh phân tích thủ công; cơ chế Hook sẽ tự động "nhắc nhở" và cập nhật dữ liệu.
-3.  **An toàn tuyệt đối trên IDE:** Agent trên IDE sẽ trực tiếp nhìn thấy các tool `impact` và `detect_changes` trong danh sách MCP Tools và chủ động gọi chúng theo quy chuẩn viết trong file [AGENTS.md](file:///Users/vanhungphan/Developement/ai/agentproject-workspaces/AGENTS.md).
+3.  **An toàn tuyệt đối trên IDE:** Agent trên IDE sẽ trực tiếp nhìn thấy các tool `impact` và `detect_changes` trong danh sách MCP Tools và chủ động gọi chúng theo quy chuẩn viết trong file [AGENTS.md](../../../AGENTS.md).
 
 ### Vai trò Cầu nối của GitNexus Global
 Để cấu hình bất đối xứng này vận hành trơn tru nhất, điểm mấu chốt là **cả Claude CLI và Antigravity IDE đều phải gọi chung bản cài đặt GitNexus Global** (thay vì chạy thông qua `npx` hoặc các phiên bản cục bộ khác nhau). 
@@ -111,24 +111,31 @@ Lợi ích của sự nhất quán này bao gồm:
 
 ---
 
-## 5. Hướng dẫn Cấu hình Chi tiết (MacOS)
+## 5. Hướng dẫn Cấu hình Chi tiết (macOS)
 
-### Bước 1: Cài đặt GitNexus Global
-Đảm bảo GitNexus đã được cài đặt trên máy của bạn (sử dụng Homebrew hoặc npm global) để tăng tốc độ chạy thay vì sử dụng `npx` tải lại mỗi lần:
+### Bước 1: Cài đặt và Xác minh GitNexus Global
+Đảm bảo GitNexus đã được cài đặt trên macOS của bạn để tối ưu tốc độ khởi chạy (tránh sử dụng `npx` tải lại mỗi lần):
 ```bash
 # Cài đặt qua Homebrew (Khuyến nghị trên macOS)
 brew install gitnexus
 
 # Hoặc cài đặt qua npm
 npm install -g gitnexus
-
-# Xác minh đường dẫn hoạt động
-which gitnexus
-# Kết quả mong đợi: /opt/homebrew/bin/gitnexus hoặc /usr/local/bin/gitnexus
 ```
 
-### Bước 2: Thiết lập Hooks cho Claude CLI
-Tạo và sao chép các file hook script vào thư mục cấu hình cá nhân của bạn:
+**Xác định đường dẫn nhị phân thực tế:**
+Chạy lệnh sau trong Terminal để lấy đường dẫn cài đặt chính xác:
+```bash
+which gitnexus
+```
+*   **macOS Apple Silicon (M1/M2/M3/M4):** Thường cài đặt tại `/opt/homebrew/bin/gitnexus`
+*   **macOS Intel (hoặc cài qua npm global):** Thường cài đặt tại `/usr/local/bin/gitnexus` hoặc `~/.npm-global/bin/gitnexus`
+
+> [!IMPORTANT]
+> Hãy copy đường dẫn thực tế trả về từ Terminal để cấu hình vào tham số `"command"` trong các bước bên dưới.
+
+### Bước 2: Thiết lập Hooks cho Claude CLI (Claude Code)
+Sao chép các file hook script hỗ trợ phân tích code tự động vào thư mục cấu hình của Claude:
 ```bash
 # Tạo thư mục chứa hooks
 mkdir -p ~/.claude/hooks/gitnexus/
@@ -137,15 +144,15 @@ mkdir -p ~/.claude/hooks/gitnexus/
 cp -r hooks/gitnexus/ ~/.claude/hooks/gitnexus/
 ```
 
-### Bước 3: Cấu hình File settings.json cho Claude CLI
-Chỉnh sửa file [settings.json](file:///Users/vanhungphan/.claude/settings.json) toàn cục của Claude Code để chạy chế độ **Hybrid**:
+### Bước 3: Cấu hình `settings.json` cho Claude CLI (Toàn cục)
+Chỉnh sửa file cấu hình global của Claude Code tại [settings.json](~/.claude/settings.json) để chạy chế độ **Hybrid** (tự quản lý server và kích hoạt hook):
 
 ```json
 {
   "model": "dev",
   "mcpServers": {
     "gitnexus": {
-      "command": "/opt/homebrew/bin/gitnexus",
+      "command": "/opt/homebrew/bin/gitnexus", // Sử dụng đường dẫn thực tế ở Bước 1
       "args": ["mcp"]
     }
   },
@@ -156,7 +163,7 @@ Chỉnh sửa file [settings.json](file:///Users/vanhungphan/.claude/settings.js
         "hooks": [
           {
             "type": "command",
-            "command": "node '/Users/vanhungphan/.claude/hooks/gitnexus/gitnexus-hook.cjs'",
+            "command": "node '~/.claude/hooks/gitnexus/gitnexus-hook.cjs'",
             "timeout": 10,
             "statusMessage": "Enriching with GitNexus graph context..."
           }
@@ -169,7 +176,7 @@ Chỉnh sửa file [settings.json](file:///Users/vanhungphan/.claude/settings.js
         "hooks": [
           {
             "type": "command",
-            "command": "node '/Users/vanhungphan/.claude/hooks/gitnexus/gitnexus-hook.cjs'",
+            "command": "node '~/.claude/hooks/gitnexus/gitnexus-hook.cjs'",
             "timeout": 10,
             "statusMessage": "Checking GitNexus index freshness..."
           }
@@ -182,19 +189,41 @@ Chỉnh sửa file [settings.json](file:///Users/vanhungphan/.claude/settings.js
 }
 ```
 
-### Bước 4: Cấu hình File cho Antigravity IDE
-Đối với IDE, cấu hình MCP Server cấp dự án tại [.mcp.json](file:///Users/vanhungphan/Developement/ai/agentproject-workspaces/.mcp.json) sẽ ghi đè và thiết lập trực tiếp:
+### Bước 4: Cấu hình MCP cho Antigravity IDE (Gemini)
+Bạn có thể chọn một trong hai phương án cấu hình (hoặc cả hai nếu muốn đồng bộ):
 
+#### Phương án A: Cấu hình Cục bộ (Chỉ áp dụng cho dự án hiện tại — Khuyên dùng)
+Tạo hoặc chỉnh sửa file [`.mcp.json`](../../../.mcp.json) ở gốc thư mục dự án của bạn:
 ```json
 {
   "mcpServers": {
     "gitnexus": {
-      "command": "/opt/homebrew/bin/gitnexus",
+      "command": "/opt/homebrew/bin/gitnexus", // Sử dụng đường dẫn thực tế ở Bước 1
       "args": ["mcp"]
     }
   }
 }
 ```
+
+#### Phương án B: Cấu hình Toàn cục (Áp dụng cho mọi dự án mở trên IDE)
+Chỉnh sửa file cấu hình global của IDE tại `~/.gemini/config/mcp_config.json` (Đây là file tự động hiển thị khi bạn mở giao diện Settings của IDE):
+```json
+{
+  "mcpServers": {
+    "gitnexus": {
+      "command": "/opt/homebrew/bin/gitnexus", // Sử dụng đường dẫn thực tế ở Bước 1
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+> [!NOTE]
+> **Quy tắc ưu tiên:** Nếu file [`.mcp.json`](../../../.mcp.json) cục bộ tồn tại trong thư mục dự án, nó sẽ **ghi đè hoàn toàn** cấu hình của file global `mcp_config.json`.
+
+### Bước 5: Tải lại cấu hình (Reload) để áp dụng thay đổi
+*   **Với Claude CLI:** Gõ lệnh `/exit` (hoặc bấm `Ctrl + C`) để thoát phiên làm việc dòng lệnh hiện tại, sau đó khởi chạy lại bằng lệnh `claude`.
+*   **Với Antigravity IDE:** Thực hiện reload window của IDE (hoặc khởi động lại ứng dụng) để Agent nạp lại các server MCP mới.
 
 ---
 
