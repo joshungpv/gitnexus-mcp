@@ -188,14 +188,6 @@ Chỉnh sửa file [settings.json](file:///Users/vanhungphan/.claude/settings.js
 ```json
 {
   "mcpServers": {
-    "graphify": {
-      "command": "python3",
-      "args": [
-        "-m",
-        "graphify.serve",
-        "./graphify-out/graph.json"
-      ]
-    },
     "gitnexus": {
       "command": "/opt/homebrew/bin/gitnexus",
       "args": ["mcp"]
